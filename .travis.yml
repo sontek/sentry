@@ -104,6 +104,7 @@ matrix:
       env: TEST_SUITE=cli
       services:
         - postgresql
+        - redis-server
     - python: 2.7
       env: TEST_SUITE=dist
     - python: 2.7
