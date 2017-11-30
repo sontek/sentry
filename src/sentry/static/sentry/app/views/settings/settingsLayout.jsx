@@ -72,6 +72,7 @@ class SettingsLayout extends React.Component {
     renderNavigation: PropTypes.func,
   };
   render() {
+    
     let {params, renderNavigation, children} = this.props;
     // We want child's view's props
     let childProps = (children && children.props) || this.props;
