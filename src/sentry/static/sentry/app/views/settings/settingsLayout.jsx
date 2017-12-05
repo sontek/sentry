@@ -11,13 +11,18 @@ import SettingsHeader from './components/settingsHeader';
 import SettingsSearch from './components/settingsSearch';
 import replaceRouterParams from '../../utils/replaceRouterParams';
 
-let StyledWarning = styled.div`margin-bottom: 30px;`;
+let StyledWarning = styled.div`
+  margin-bottom: 30px;
+`;
 // TODO(billy): Temp
 let NewSettingsWarning = ({location = {}}) => {
   // TODO(billy): Remove this warning when ready
   let oldLocation = location.pathname
     ? location.pathname.replace(/^\/settings\/organization\//, '/organizations/')
     : '';
+
+  if (oldLocation === location.pathname) return null;
+
   // members or auth should not be react routes
   let isRouter = !/\/(members|auth)\//.test(location.pathname);
   let linkProps = {
@@ -65,34 +70,38 @@ BackButton.propTypes = {
   to: PropTypes.string,
 };
 
-const Content = styled(Box)`flex: 1;`;
+const Content = styled(Box)`
+  flex: 1;
+`;
 
 class SettingsLayout extends React.Component {
   static propTypes = {
     renderNavigation: PropTypes.func,
+    route: PropTypes.object,
+    routes: PropTypes.array,
   };
+
   render() {
-    
-    let {params, renderNavigation, children} = this.props;
+    let {params, routes, route, renderNavigation, children} = this.props;
     // We want child's view's props
     let childProps = (children && children.props) || this.props;
-    let childRoutes = childProps.routes || [];
-    let childRoute = childProps.route || {};
+    let childRoutes = childProps.routes || routes || [];
+    let childRoute = childProps.route || route || {};
     return (
       <div>
         <SettingsHeader>
-          <BackButton to={replaceRouterParams('/:orgId', params)} />
+          <BackButton to={replaceRouterParams('/:orgId', params).replace(':orgId', '')} />
           <Box flex="1">
             <SettingsBreadcrumb params={params} routes={childRoutes} route={childRoute} />
           </Box>
           <SettingsSearch params={params} />
         </SettingsHeader>
         <Flex>
-          <Box flex="0 0 210px">
-            <StickySidebar>
-              {typeof renderNavigation === 'function' && renderNavigation()}
-            </StickySidebar>
-          </Box>
+          {typeof renderNavigation === 'function' && (
+            <Box flex="0 0 210px">
+              <StickySidebar>{renderNavigation()}</StickySidebar>
+            </Box>
+          )}
           <Content>
             <NewSettingsWarning location={this.props.location} />
 
